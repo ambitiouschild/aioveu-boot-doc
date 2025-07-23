@@ -47,6 +47,10 @@ sudo ufw status
 sudo ufw allow 22/tcp
 重新加载防火墙规则：
 
+# 检查防火墙后端接口
+sudo ufw status
+sudo ufw allow 8989
+
 sudo ufw reload
 
 ```
