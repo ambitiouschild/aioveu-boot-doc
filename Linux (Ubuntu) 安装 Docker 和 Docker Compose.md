@@ -16,11 +16,37 @@ sudo apt-get update
 
 ```
 sudo apt-get install \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release
+    ca-certificates \  # SSL证书支持
+    curl \              # 网络传输工具
+    gnupg \              # 加密签名工具
+    lsb-release             # 系统版本信息工具
+    
+    这些依赖确保后续安装过程的安全性和兼容性
 ```
+
+### 3.官方脚本自动化安装
+
+推荐使用Docker官方提供的一键安装脚本：
+
+```
+curl -fsSL https://test.docker.com -o test-docker.sh  # 下载安装脚本
+sh test-docker.sh                                    # 执行安装程序
+
+说明：此脚本会自动完成以下工作：
+- 添加Docker官方GPG密钥
+- 设置稳定版仓库
+- 安装containerd运行时
+- 配置docker-ce核心组件
+- 创建docker用户组
+
+
+```
+
+
+
+
+
+
 
 ### 3. 添加Docker的官方GPG密钥
 
@@ -30,7 +56,7 @@ sudo apt-get install \
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 ```
 
-### 4. 设置Docker仓库
+### 4. 设置Docker仓库  配置国内镜像加速（关键步骤）
 
 添加Docker仓库到你的APT源列表中：
 
@@ -38,13 +64,31 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o 
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  
+  
+ 由于默认仓库访问较慢，需配置镜像源加速：
+ sudo vim /etc/docker/daemon.json  # 使用nano编辑器可替换为sudo nano
+ 
+ 输入以下内容（建议保留3-4个镜像源）：
+ 
+ {
+  "ipv6": false,
+  "dns": ["8.8.8.8", "8.8.4.4"],
+  "registry-mirrors": [
+    "https://docker.m.daocloud.io",
+    "https://dockerpull.org",
+    "https://docker.1panel.live"
+  ]
+}
 ```
 
 
 
-aioveu@aioveu:~$   sudo systemctl daemon-reload     #重新加载配置
+sudo systemctl daemon-reload     #重新加载配置
 
-aioveu@aioveu:~$   sudo systemctl restart docker      #重启docker服务
+sudo systemctl restart docker      #重启docker服务
+
+sudo systemctl enable docker     # 设置开机自启（可选）
 
 
 
